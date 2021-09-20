@@ -1,3 +1,7 @@
+const {isSulfuras,isBackstagePasses,isAgedBrie,isNormalItem} = require("./verification")
+const { agedBrieRules,backstageRules,normalRules } = require("./controllers");
+const { decreaseSellIn } = require("./helpers");
+
 class Item {
   constructor(name, sellIn, quality){
     this.name = name;
@@ -23,77 +27,19 @@ function updateQualityItem(item){
   if(isSulfuras(item)) return;
 
   if(isAgedBrie(item)){
-    if(isQualityMax(item)) return;
-    increaseQuality(item);
-
-    if(!isExpired(item)) return;
-
-    if(isQualityMax(item)) return;
-    increaseQuality(item);
+    agedBrieRules(item);
   }
   
   if (isBackstagePasses(item)) {
-    if(isQualityMax(item)) return;
-    increaseQuality(item);
-    if(item.sellIn < 11){
-      increaseQuality(item);
-    }
-    if(item.sellIn < 6){
-      increaseQuality(item);
-    }
-
-    if(!isExpired(item)) return;
-    item.quality = 0
-    
+    backstageRules(item);
   }
 
   if(isNormalItem(item)){
-    if (item.quality > 0) {
-      decreaseQuality(item);
-    }
-    if(isExpired(item)){
-      decreaseQuality(item);
-    }
+    normalRules(item);
   }
   
   decreaseSellIn(item);
   
-}
-
-function isQualityMin(item){
-  const minQuality = 0 ;
-  return item.quality > 0;
-}
-
-function isQualityMax(item){
-  const maxQuality = 50;
-  return item.quality >= maxQuality;
-}
-
-function isExpired(item){
-  return item.sellIn <= 0;
-}
-function isSulfuras(item){
-  return item.name === "Sulfuras, Hand of Ragnaros";
-}
-function isBackstagePasses(item){
-  return item.name === "Backstage passes to a TAFKAL80ETC concert"
-}
-function isAgedBrie(item){
-  return item.name === "Aged Brie";
-}
-function isNormalItem(item){
-  return !(isSulfuras(item) || isBackstagePasses(item) || isAgedBrie(item));
-}
-
-function increaseQuality(item){
-  item.quality ++;
-};
-function decreaseQuality(item){
-  item.quality --;
-}
-function decreaseSellIn(item){
-  item.sellIn --;
 }
 
 module.exports = {
