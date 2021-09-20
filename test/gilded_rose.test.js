@@ -6,7 +6,7 @@ describe("Rules", function(){
     const items = gildedRose.updateQuality();
     expect(items[0].name).toBe("foo");
   });
-  it("should decrease the quality when it's expired", function() {
+  it("should decrease the quality ", function() {
     const gildedRose = new Shop([new Item("foo", 2, 2)]);
     const items = gildedRose.updateQuality();
     expect(items[0].quality).toBe(1);

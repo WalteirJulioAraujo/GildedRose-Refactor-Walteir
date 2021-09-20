@@ -21,48 +21,58 @@ class Shop {
 function updateQualityItem(item){
 
   if(isSulfuras(item)) return;
+
+  if(isAgedBrie(item)){
+    if(isQualityMax(item)) return;
+    increaseQuality(item);
+
+    if(!isExpired(item)) return;
+
+    if(isQualityMax(item)) return;
+    increaseQuality(item);
+  }
   
-  if (!isAgedBrie(item) && !isBackstagePasses(item)) {
+  if (isBackstagePasses(item)) {
+    if(isQualityMax(item)) return;
+    increaseQuality(item);
+    if(item.sellIn < 11){
+      increaseQuality(item);
+    }
+    if(item.sellIn < 6){
+      increaseQuality(item);
+    }
+
+    if(!isExpired(item)) return;
+    item.quality = 0
+    
+  }
+
+  if(isNormalItem(item)){
     if (item.quality > 0) {
       decreaseQuality(item);
     }
-  } else {
-    if (item.quality < 50) {
-     increaseQuality(item);
-      if (isBackstagePasses(item)) {
-        if (item.sellIn < 11) {
-          if (item.quality < 50) {
-           increaseQuality(item);
-          }
-        }
-        if (item.sellIn < 6) {
-          if (item.quality < 50) {
-           increaseQuality(item);
-          }
-        }
-      }
+    if(isExpired(item)){
+      decreaseQuality(item);
     }
   }
   
   decreaseSellIn(item);
   
-  if (item.sellIn < 0) {
-    if (!isAgedBrie(item)) {
-      if (!isBackstagePasses(item)) {
-        if (item.quality > 0) {
-          decreaseQuality(item);
-        }
-      } else {
-        item.quality = 0;
-      }
-    } else {
-      if (item.quality < 50) {
-       increaseQuality(item);
-      }
-    }
-  }
 }
 
+function isQualityMin(item){
+  const minQuality = 0 ;
+  return item.quality > 0;
+}
+
+function isQualityMax(item){
+  const maxQuality = 50;
+  return item.quality >= maxQuality;
+}
+
+function isExpired(item){
+  return item.sellIn <= 0;
+}
 function isSulfuras(item){
   return item.name === "Sulfuras, Hand of Ragnaros";
 }
@@ -71,6 +81,9 @@ function isBackstagePasses(item){
 }
 function isAgedBrie(item){
   return item.name === "Aged Brie";
+}
+function isNormalItem(item){
+  return !(isSulfuras(item) || isBackstagePasses(item) || isAgedBrie(item));
 }
 
 function increaseQuality(item){
